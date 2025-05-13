@@ -37,6 +37,33 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
+		//listFilesを使⽤してfilesという配列に、 
+		//指定したパスに存在する全てのファイル(または、ディレクトリ)の情報を格納します。 
+		File[] files = new File("C:\\Users\\trainee1209\\Desktop\\売上集計課題").listFiles(); 
+
+		//filesの数だけ繰り返すことで、 
+		//指定したパスに存在する全てのファイル(または、ディレクトリ)の数だけ繰り返されます。 
+		for(int i = 0; i < files.length ; i++) { 
+			//files[i].getName() でファイル名が取得できます。 
+		} 
+
+		//matches を使⽤してファイル名が「数字8桁.rcd」なのか判定します。
+		//if(ファイル名.matches(正規表現構⽂)) { 
+		    //trueの場合の処理  
+		//}
+
+		//File[] files = new File(ファイルのパス).listFiles(); 
+
+		//先にファイルの情報を格納する List(ArrayList) を宣⾔します。
+		//List<File> rcdFiles = new ArrayList<>(); 
+
+		//for(int i = 0; i < files.length ; i++) { 
+			//if(ファイル名.matches(正規表現構⽂)) { 
+		            //売上ファイルの条件に当てはまったものだけ、List(ArrayList) に追加します。
+				//rcdFiles.add(files[i]); 		
+			//} 
+		//}
+
 
 
 
@@ -64,12 +91,21 @@ public class CalculateSales {
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
+			//読み込んだものを格納する（一行分だけ）
 			String line;
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
-				System.out.println(line);
-			}
+
+				//読み込んだ一行をsplitメソッドで分割したものをitemsに格納（2itemになっている。1個目が支店コード（items[0]、2個目が支店名(items[1]）
+				 String[] items = line.split(",");
+
+				//Mapに追加する2つの情報を putの引数として指定します。
+				  branchNames.put(items[0], items[1]);
+				  branchSales.put(items[0], 0L);
+				  
+
+				}
 
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
