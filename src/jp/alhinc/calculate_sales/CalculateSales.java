@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CalculateSales {
@@ -37,33 +39,38 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-		//listFilesを使⽤してfilesという配列に、 
-		//指定したパスに存在する全てのファイル(または、ディレクトリ)の情報を格納します。 
-		File[] files = new File("C:\\Users\\trainee1209\\Desktop\\売上集計課題").listFiles(); 
+		//listFilesを使⽤してfilesという配列に、
+		//指定したパスに存在する全てのファイル(または、ディレクトリ)の情報を格納します。
+		File[] files = new File("C:\\Users\\trainee1209\\Desktop\\売上集計課題").listFiles();
+		List<File> rcdFiles = new ArrayList<>();
+		
+		//filesの数だけ見るのを繰り返すことで、
+		//指定したパスに存在する全てのファイル(または、ディレクトリ)の数だけ繰り返されます。
+		//0000001.rcd-00000005.rcdとbranch.lstを一つずつ見るのをくりかえして = for文
+		//以下のfor文は、「繰り返します」ことだけ言ってる
+		for(int i = 0; i < files.length ; i++) {
 
-		//filesの数だけ繰り返すことで、 
-		//指定したパスに存在する全てのファイル(または、ディレクトリ)の数だけ繰り返されます。 
-		for(int i = 0; i < files.length ; i++) { 
-			//files[i].getName() でファイル名が取得できます。 
-		} 
+			//左辺は「変数の宣言＝何型の変数か」、右辺は「代入する内容。それがなんであるか。今だったら、"00000001.rcd"が右辺に入っている」
+			String fileName = files[i].getName() ;
+			//ファイル名を取得する = 〇〇をしたいから、それするのに必要な「あなたの名前 = ファイル名」を教えて！という作業
+			//以下のgetNameメソッドは、「あなたのお名前 = ファイル名伺います～」しか聞いてない
 
-		//matches を使⽤してファイル名が「数字8桁.rcd」なのか判定します。
-		//if(ファイル名.matches(正規表現構⽂)) { 
-		    //trueの場合の処理  
-		//}
+			//matches を使⽤してファイル名が「数字8桁.rcd」なのか判定します。
+			//「8桁の数字+.rcd」で条件付けをして判定したい。全部文字列だから、String型になる
+			if(fileName.matches("[0-9]{8}+.rcd$")) {
+		    //trueの場合の処理を書きましょう
+			//trueの場合 = 「8桁の数字＋.rcd」と合致する場合
+			//ここまでは「判定しただけ」。ここから先で「判定したファイルを配列」する
 
-		//File[] files = new File(ファイルのパス).listFiles(); 
+				//やりたいこと：matches文をtrueで通過したファイルを「売上ファイル」として保持する
+				//すなわち、シンプルに「00000001.rcd-00000005.rcdを、ArrayListに追加する」指示を出せばいい
+				//宣言をする。↓
+				//「ArrayListのaddメソッドを使って、「売上ファイル」をList（＝rcdFiles)に追加するよ！」
+				rcdFiles.add(files[i]);
 
-		//先にファイルの情報を格納する List(ArrayList) を宣⾔します。
-		//List<File> rcdFiles = new ArrayList<>(); 
+			}
 
-		//for(int i = 0; i < files.length ; i++) { 
-			//if(ファイル名.matches(正規表現構⽂)) { 
-		            //売上ファイルの条件に当てはまったものだけ、List(ArrayList) に追加します。
-				//rcdFiles.add(files[i]); 		
-			//} 
-		//}
-
+		}
 
 
 
@@ -103,7 +110,7 @@ public class CalculateSales {
 				//Mapに追加する2つの情報を putの引数として指定します。
 				  branchNames.put(items[0], items[1]);
 				  branchSales.put(items[0], 0L);
-				  
+
 
 				}
 
