@@ -43,7 +43,7 @@ public class CalculateSales {
 		//指定したパスに存在する全てのファイル(または、ディレクトリ)の情報を格納します。
 		File[] files = new File("C:\\Users\\trainee1209\\Desktop\\売上集計課題").listFiles();
 		List<File> rcdFiles = new ArrayList<>();
-		
+
 		//filesの数だけ見るのを繰り返すことで、
 		//指定したパスに存在する全てのファイル(または、ディレクトリ)の数だけ繰り返されます。
 		//0000001.rcd-00000005.rcdとbranch.lstを一つずつ見るのをくりかえして = for文
@@ -64,14 +64,57 @@ public class CalculateSales {
 
 				//やりたいこと：matches文をtrueで通過したファイルを「売上ファイル」として保持する
 				//すなわち、シンプルに「00000001.rcd-00000005.rcdを、ArrayListに追加する」指示を出せばいい
-				//宣言をする。↓
-				//「ArrayListのaddメソッドを使って、「売上ファイル」をList（＝rcdFiles)に追加するよ！」
+				//注意点：for文の中で「Listつくります」の宣言すると、「Listをつくる作業」も繰り返される。すなわち、rcdFilesが繰り返し停止の指示があるまでずっと作り続けられる
+				//だから、Listは1個しか要らないしそこにいれてくのでfor文の外に書く。
+				//かつ、addメソッドより下に書くと「rcdFilesってなんすか？」とコンピューターは困ってしまう。
+				//だから、addより上に書く。
+				//for文の外、かつ、addより上、であるところに宣言するのが正しい。
+				//それがどこかっっていうと、File[] files = new File("C:\\Users\\trainee1209\\Desktop\\売上集計課題").listFiles();の下！
 				rcdFiles.add(files[i]);
 
 			}
 
 		}
 
+		//ここから2-2
+		//やりたいこと：①売上ファイルを読み込んで格納して、②読み込んだ売上ファイルから「支店コード」「売上額」を取り出して、③売上額を加算する
+		//っていうのをファイル数分だけ繰り返したい！！
+
+		//まず、変数の数だけ特定の作業を繰り返してほしいことを宣言するため「for文」を使う
+		//ここでは、変数＝ファイル数 であり、特定の作業というのは、for文内のもっと後ろで行うので一旦無視
+		for(int i = 0; i < rcdFiles.size(); i++) {
+
+			//なにを繰り返しましょうか？の状態なので、これからやりたいことの、
+			//①売上ファイルを読み込んで格納して、②読み込んだ売上ファイルから「支店コード」「売上額」を取り出して、③売上額を加算する
+			//①-③のうちの、①だけを初めに行う
+			//どうやって？：BufferedReaderクラスのreadlineメソッドを使って情報を読み込んだのちに格納する
+			//なぜbrを使う？：BufferedReaderクラスは、ファイル情報を読み込める仕組み。
+			//また、売上ファイルは改行区切りであるため、1文字ずつ読み込むFileReaderderのreadメソッドではなくBufferedReaderのreadlineメソッドを使う
+
+			//ファイルのパス＝使いたいファイルの住所
+			//それを使ってどうしたい？ = BufferedReaderクラスのreadlineメソッドを使って一行ずつ読み込んでほしい
+			//File型のfileっていう変数に代入します = File（売上集計課題フォルダの中の、rcdFilesを1個ずつ取り出して名前をきいたもの）
+			File file = new File("C:\\Users\\trainee1209\\Desktop\\売上集計課題", rcdFiles.get(i).getName());
+			//fileReaderをつくる
+			FileReader fr = new FileReader(file);
+			//brを使うには、面倒だが1回frを作らないといけない。イメージは「スキルアップ」
+			BufferedReader br = new BufferedReader(fr);
+
+			//使いたいメソッドを↑で指示することができた。じゃあ次。いつまで一行ずつ読み込みますか？の指示待ち状態
+			//なにを、いつまで（行を = 一行ずつ読み込むのが = なくなるまで）やってほしいです
+			//なにを
+			String line;
+			//～まで(lineていう変数に = readlineメソッドで読み込んだ変数を代入する、nullでなければ
+			while((line = br.readLine()) != null) {
+				//↑だけだと、「読んだものが宙ぶらりん状態」。だから格納しないといけない
+				//配列かlistか？  list。nullって私はわかるけど、コンピューターはいつまでがnullかわからないので文字列があるだけ無限に
+				List<String>loadedstr = new ArrayList<>();
+				//↑でlistを作れた。このlistに、読み込んだ変数である「line」を入れて、と指示する
+					loadedstr.add(line);
+
+			}
+
+			long fileSale = Long.parseLong(売上⾦額);
 
 
 		// 支店別集計ファイル書き込み処理
