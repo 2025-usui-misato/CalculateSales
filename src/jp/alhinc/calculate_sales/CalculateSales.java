@@ -76,7 +76,7 @@ public class CalculateSales {
 
 		}
 
-		//ここから2-2
+		//ここから2-2 ファイルの読込
 		//やりたいこと：①売上ファイルを読み込んで格納して、②読み込んだ売上ファイルから「支店コード」「売上額」を取り出して、③売上額を加算する
 		//っていうのをファイル数分だけ繰り返したい！！
 
@@ -84,42 +84,83 @@ public class CalculateSales {
 		//ここでは、変数＝ファイル数 であり、特定の作業というのは、for文内のもっと後ろで行うので一旦無視
 		for(int i = 0; i < rcdFiles.size(); i++) {
 
-			//なにを繰り返しましょうか？の状態なので、これからやりたいことの、
-			//①売上ファイルを読み込んで格納して、②読み込んだ売上ファイルから「支店コード」「売上額」を取り出して、③売上額を加算する
-			//①-③のうちの、①だけを初めに行う
-			//どうやって？：BufferedReaderクラスのreadlineメソッドを使って情報を読み込んだのちに格納する
-			//なぜbrを使う？：BufferedReaderクラスは、ファイル情報を読み込める仕組み。
-			//また、売上ファイルは改行区切りであるため、1文字ずつ読み込むFileReaderderのreadメソッドではなくBufferedReaderのreadlineメソッドを使う
+			BufferedReader br = null;
 
-			//ファイルのパス＝使いたいファイルの住所
-			//それを使ってどうしたい？ = BufferedReaderクラスのreadlineメソッドを使って一行ずつ読み込んでほしい
-			//File型のfileっていう変数に代入します = File（売上集計課題フォルダの中の、rcdFilesを1個ずつ取り出して名前をきいたもの）
-			File file = new File("C:\\Users\\trainee1209\\Desktop\\売上集計課題", rcdFiles.get(i).getName());
-			//fileReaderをつくる
-			FileReader fr = new FileReader(file);
-			//brを使うには、面倒だが1回frを作らないといけない。イメージは「スキルアップ」
-			BufferedReader br = new BufferedReader(fr);
+			try {
+				//なにを繰り返しましょうか？の状態なので、これからやりたいことの、
+				//①売上ファイルを読み込んで格納して、②読み込んだ売上ファイルから「支店コード」「売上額」を取り出して、③売上額を加算する
+				//①-③のうちの、①だけを初めに行う
+				//どうやって？：BufferedReaderクラスのreadlineメソッドを使って情報を読み込んだのちに格納する
+				//なぜbrを使う？：BufferedReaderクラスは、ファイル情報を読み込める仕組み。
+				//また、売上ファイルは改行区切りであるため、1文字ずつ読み込むFileReaderderのreadメソッドではなくBufferedReaderのreadlineメソッドを使う
 
-			//使いたいメソッドを↑で指示することができた。じゃあ次。いつまで一行ずつ読み込みますか？の指示待ち状態
-			//なにを、いつまで（行を = 一行ずつ読み込むのが = なくなるまで）やってほしいです
-			//なにを
-			String line;
-			//～まで(lineていう変数に = readlineメソッドで読み込んだ変数を代入する、nullでなければ
-			while((line = br.readLine()) != null) {
-				//↑だけだと、「読んだものが宙ぶらりん状態」。だから格納しないといけない
-				//配列かlistか？  list。nullって私はわかるけど、コンピューターはいつまでがnullかわからないので文字列があるだけ無限に
+				//ファイルのパス＝使いたいファイルの住所
+				//それを使ってどうしたい？ = BufferedReaderクラスのreadlineメソッドを使って一行ずつ読み込んでほしい
+				//File型のfileっていう変数に代入します = Fileっていうのは（売上集計課題フォルダの中の、rcdFilesを1個ずつ取り出して名前をきいたもの）
+				File file = new File("C:\\Users\\trainee1209\\Desktop\\売上集計課題", rcdFiles.get(i).getName());
+				//fileReaderをつくる
+				FileReader fr = new FileReader(file);
+				//brを使うには、面倒だが1回frを作らないといけない。イメージは「スキルアップ」
+				br = new BufferedReader(fr);
+
+				//使いたいメソッドを↑で指示することができた。じゃあ次。いつまで一行ずつ読み込みますか？の指示待ち状態
+				//なにを、いつまで（行を = 一行ずつ読み込むのが = なくなるまで）やってほしいです
+				String line;
 				List<String>loadedstr = new ArrayList<>();
-				//↑でlistを作れた。このlistに、読み込んだ変数である「line」を入れて、と指示する
-					loadedstr.add(line);
+				//～まで(lineていう変数に = readlineメソッドで読み込んだ変数を代入する、nullでなければ
+				while((line = br.readLine()) != null) {
 
+					//↑だけだと、「読んだものが宙ぶらりん状態」。だから格納しないといけない
+					//配列かlistか？  list。nullって私はわかるけど、コンピューターはいつまでがnullかわからないので文字列があるだけ無限に
+					//↑でlistを作れた。このlistに、読み込んだ変数である「line」を入れて、と指示する
+						loadedstr.add(line);
+				}
+
+				//ここから2-2 型の変換
+				//ここまでで、読み込むことだけできている
+				//このあとどんな流れ？ → 最終的に「加算できるようにしたい」ので、
+				//①まず、Stringとして扱われている売上額をLongに変換して格納しなおす、
+				//なぜ？ → Mapは「key：String、Value：int」じゃないとだめだから。かつ、売上額は大きくなる可能性があるためintよりLongが適切
+				//どうやって？ → Long型のparseLongメソッドを使って変換する
+				//②そのうえで、変換した売上額をMapからもってくる
+				//どうやって？ → keyとValueの関係性を使って、鍵を開けるイメージ？
+				//③そしてはじめて計算できるようになるため、加算する
+
+				//①をやっていく。売上額がStringになっているので、Longに変換する
+				//売上金額は、読込時に(1)に入っている。支店コードが変わろうがこれは同じ。てことは支店コードは(0)に入っている
+				//売上額さんがご入居されている住所を、()にいれる。参照するということ
+				long fileSale = Long.parseLong(loadedstr.get(1));
+
+				//Map(HashMap)から売上額を取得して、加算することを一気に行う
+				//Long saleAmount = 売上⾦額を⼊れたMap.get(⽀店コード) + long に変換した売上⾦額; に倣って書く
+				//saleAmountっていうのは、売上金額を入れたmapです、支店コードがkeyでlongに変換した売上額がvalue
+				Long saleAmount = branchSales.get(loadedstr.get(0)) + fileSale;
+				//支店コードと売上額を追加するためのmap：branchSalesに、(支店コードを表す第一引数,売上額を表す第二引数)をぶちこむput
+					branchSales.put(loadedstr.get(0), saleAmount);
+
+
+			} catch(IOException e) {
+				System.out.println(UNKNOWN_ERROR);
+				return;
+			} finally {
+				// ファイルを開いている場合
+				if(br != null) {
+					try {
+						// ファイルを閉じる
+						br.close();
+					} catch(IOException e) {
+						System.out.println(UNKNOWN_ERROR);
+						return;
+					}
+				}
 			}
-
-			long fileSale = Long.parseLong(売上⾦額);
+		}
 
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
-			return;
+
+
 		}
 
 	}
