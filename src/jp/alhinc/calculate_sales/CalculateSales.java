@@ -1,8 +1,10 @@
 package jp.alhinc.calculate_sales;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -226,7 +228,81 @@ public class CalculateSales {
 	 * @return 書き込み可否
 	 */
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
-		// ※ここに書き込み処理を作成してください。(処理内容3-1)
+		// 以下に書き込み処理を作成してください。(処理内容3-1)
+
+		//やること：①ファイルを作って、②書き込んで、③書き込みの例外処理して、④出力
+		//まず①をする。fileを新しく作るんだけど、（）に作ってね
+		File file = new File("\"C:\\\\Users\\\\trainee1209\\\\Desktop\\\\売上集計課題\"");
+		FileWriter fw = new FileWriter(file);
+		BufferedWriter bw = new BufferedWriter(bw);
+
+		//Keyが取得できればMapのgetメソッドを使⽤してValueも取得できるため、どちらかのMapから全てのKeyを取得する必要がある
+		//そのkeyの文だけ繰り返してね、を指示する
+		//拡張for文を使う理由は? → 全要素を順番に取り出したいから。keyを使ってそれぞれのvalueを全部取得したいから拡張for文を使う
+
+		//やりたいこと：①branchNamesからkeyを使ってvalueを取り出す、②取り出したkeyとvalueを書き込む、③branchSalesからkeyを使ってvalueのみ取り出す、④改行する
+		//というのを繰り返したい！
+		//まず繰り返すことを宣言する。繰り返します（branchNamesっていうmapの、string型のkeyを1個ずつ）
+
+		for
+
+		try {
+
+		for (String key : branchNames.keySet()) {
+
+			//①をやる。map.get
+			String value1;
+			branchNames.get(key + value1);
+
+				bw.write(key);
+				bw.write(value1);
+
+		}
+
+		    //②をやる。まず繰り返すことを宣言する
+		for (String key : branchSales.keySet()) {
+
+		     String value2;
+		     branchSales.get(key + value2);
+			     bw.write(value2);
+
+			     bw.newLine();
+
+		}
+
+		} catch(IOException e) {
+			System.out.println(UNKNOWN_ERROR);
+			return false;
+
+		} finally {
+			if(br != null) {
+				try {
+					// ファイルを閉じる
+					br.close();
+				} catch(IOException e) {
+					System.out.println(UNKNOWN_ERROR);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+		}
+
+
+
+
+
+
+
+
+		//書き込みたい支店コード、支店名、合計金額っていうのはこうやって取得してね
+
+		//try ：ファイルを作成し、書き込む処理
+		//catch ：エラーメッセージの表⽰
+		//finally ：ファイルを開いた場合は、ファイルを閉じる処理
+
 
 		return true;
 	}
