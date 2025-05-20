@@ -229,12 +229,13 @@ public class CalculateSales {
 	 */
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		// 以下に書き込み処理を作成してください。(処理内容3-1)
+		BufferedWriter bw = null;
 
-		//やること：①ファイルを作って、②書き込んで、③書き込みの例外処理して、④出力
-		//まず①をする。fileを新しく作るんだけど、（）に作ってね
-		File file = new File("\"C:\\\\Users\\\\trainee1209\\\\Desktop\\\\売上集計課題\"");
-		FileWriter fw = new FileWriter(file);
-		BufferedWriter bw = new BufferedWriter(bw);
+		try {
+			//fileをつくる = fileは（users配下のtrainee1209の配下のDesktop配下の「売上集計課題フォルダ」で、branch.outっていう名前にしたい
+			File file = new File(path,fileName);
+			FileWriter fw = new FileWriter(file);
+			bw = new BufferedWriter(fw);
 
 		//Keyが取得できればMapのgetメソッドを使⽤してValueも取得できるため、どちらかのMapから全てのKeyを取得する必要がある
 		//そのkeyの文だけ繰り返してね、を指示する
@@ -244,66 +245,25 @@ public class CalculateSales {
 		//というのを繰り返したい！
 		//まず繰り返すことを宣言する。繰り返します（branchNamesっていうmapの、string型のkeyを1個ずつ）
 
-		for
-
-		try {
-
-		for (String key : branchNames.keySet()) {
-
-			//①をやる。map.get
-			String value1;
-			branchNames.get(key + value1);
-
-				bw.write(key);
-				bw.write(value1);
-
-		}
-
-		    //②をやる。まず繰り返すことを宣言する
-		for (String key : branchSales.keySet()) {
-
-		     String value2;
-		     branchSales.get(key + value2);
-			     bw.write(value2);
-
-			     bw.newLine();
-
-		}
+				for(String key:branchNames.keySet()) {
+					bw.write(key + ","+ branchNames.get(key) + "," + branchSales.get(key));
+					bw.newLine();
+				}
 
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
-			return false;
+				return false;
 
 		} finally {
-			if(br != null) {
+			if(bw != null) {
 				try {
-					// ファイルを閉じる
-					br.close();
+					bw.close();
 				} catch(IOException e) {
 					System.out.println(UNKNOWN_ERROR);
-					return false;
+						return false;
+					}
 				}
 			}
-		}
-		return true;
-	}
-
-		}
-
-
-
-
-
-
-
-
-		//書き込みたい支店コード、支店名、合計金額っていうのはこうやって取得してね
-
-		//try ：ファイルを作成し、書き込む処理
-		//catch ：エラーメッセージの表⽰
-		//finally ：ファイルを開いた場合は、ファイルを閉じる処理
-
-
 		return true;
 	}
 
