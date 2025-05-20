@@ -31,21 +31,21 @@ public class CalculateSales {
 	 */
 	public static void main(String[] args) {
 		// 支店コードと支店名を保持するMap
-		Map<String, String> branchNames = new HashMap<>() ;
+		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
-		Map<String, Long> branchSales = new HashMap<>() ;
+		Map<String, Long> branchSales = new HashMap<>();
 
 		// 支店定義ファイル読み込み処理
 		//もし、（readFileが、args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales）だったら返す
 		if (!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
-			return  ;
+			return;
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
 		//listFilesを使⽤してfilesという配列に、
 		//指定したパスに存在する全てのファイル(または、ディレクトリ)の情報を格納します。
-		File[] files = new File(args[0]).listFiles() ;
-		List<File> rcdFiles = new ArrayList<>() ;
+		File[] files = new File(args[0]).listFiles();
+		List<File> rcdFiles = new ArrayList<>();
 
 		//filesの数だけ見るのを繰り返すことで、
 		//指定したパスに存在する全てのファイル(または、ディレクトリ)の数だけ繰り返されます。
@@ -54,7 +54,7 @@ public class CalculateSales {
 		for (int i = 0; i < files.length; i++) {
 
 			//左辺は「変数の宣言＝何型の変数か」、右辺は「代入する内容。それがなんであるか。今だったら、"00000001.rcd"が右辺に入っている」
-			String fileName = files[i].getName() ;
+			String fileName = files[i].getName();
 			//ファイル名を取得する = 〇〇をしたいから、それするのに必要な「あなたの名前 = ファイル名」を教えて！という作業
 			//以下のgetNameメソッドは、「あなたのお名前 = ファイル名伺います～」しか聞いてない
 
@@ -73,10 +73,26 @@ public class CalculateSales {
 				//だから、addより上に書く。
 				//for文の外、かつ、addより上、であるところに宣言するのが正しい。
 				//それがどこかっっていうと、File[] files = new File("C:\\Users\\trainee1209\\Desktop\\売上集計課題").listFiles();の下！
-				rcdFiles.add(files[i]) ;
+				rcdFiles.add(files[i]);
 
 			}
 
+		}
+
+		//⽐較回数は売上ファイルの数よりも1回少ないため、
+		//繰り返し回数は売上ファイルのリストの数よりも1つ⼩さい数です。
+		for (int i = 0; i < rcdFiles.size() - 1; i++) {
+
+			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
+			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
+
+			//⽐較する2つのファイル名の先頭から数字の8⽂字を切り出し、int型に変換します。
+			if ((latter - former) != 1) {
+				//2つのファイル名の数字を⽐較して、差が1ではなかったら、
+				//エラーメッセージをコンソールに表⽰します。
+				System.out.println(FILE_INVALID_FORMAT);
+				return;
+			}
 		}
 
 		//ここから2-2 ファイルの読込
@@ -87,7 +103,7 @@ public class CalculateSales {
 		//ここでは、変数＝ファイル数 であり、特定の作業というのは、for文内のもっと後ろで行うので一旦無視
 		for (int i = 0; i < rcdFiles.size(); i++) {
 
-			BufferedReader br = null ;
+			BufferedReader br = null;
 
 			try {
 				//なにを繰り返しましょうか？の状態なので、これからやりたいことの、
@@ -100,23 +116,23 @@ public class CalculateSales {
 				//ファイルのパス＝使いたいファイルの住所
 				//それを使ってどうしたい？ = BufferedReaderクラスのreadlineメソッドを使って一行ずつ読み込んでほしい
 				//File型のfileっていう変数に代入します = Fileっていうのは（売上集計課題フォルダの中の、rcdFilesを1個ずつ取り出して名前をきいたもの）
-				File file = new File(args[0], rcdFiles.get(i).getName()) ;
+				File file = new File(args[0], rcdFiles.get(i).getName());
 				//fileReaderをつくる
-				FileReader fr = new FileReader(file) ;
-				//brを使うには、面倒だが1回frを作らないといけない。イメージは「スキルアップ」
-				br = new BufferedReader(fr) ;
+				FileReader fr = new FileReader(file);
+				//brを使うには、面倒だが1回frを作らないといけない。イメージは「1社挟んで転職してスキルアップ」
+				br = new BufferedReader(fr);
 
 				//使いたいメソッドを↑で指示することができた。じゃあ次。いつまで一行ずつ読み込みますか？の指示待ち状態
 				//なにを、いつまで（行を = 一行ずつ読み込むのが = なくなるまで）やってほしいです
-				String line ;
-				List<String> loadedStr = new ArrayList<>() ;
+				String line;
+				List<String> loadedStr = new ArrayList<>();
 				//～まで(lineていう変数に = readlineメソッドで読み込んだ変数を代入する、nullでなければ
 				while ((line = br.readLine()) != null) {
 
 					//↑だけだと、「読んだものが宙ぶらりん状態」。だから格納しないといけない
 					//配列かlistか？  list。nullって私はわかるけど、コンピューターはいつまでがnullかわからないので文字列があるだけ無限に
 					//↑でlistを作れた。このlistに、読み込んだ変数である「line」を入れて、と指示する
-					loadedStr.add(line) ;
+					loadedStr.add(line);
 				}
 
 				//ここから2-2 型の変換
@@ -132,27 +148,27 @@ public class CalculateSales {
 				//①をやっていく。売上額がStringになっているので、Longに変換する
 				//売上金額は、読込時に(1)に入っている。支店コードが変わろうがこれは同じ。てことは支店コードは(0)に入っている
 				//売上額さんがご入居されている住所を、()にいれる。参照するということ
-				long fileSale = Long.parseLong(loadedStr.get(1)) ;
+				long fileSale = Long.parseLong(loadedStr.get(1));
 
 				//Map(HashMap)から売上額を取得して、加算することを一気に行う
 				//Long saleAmount = 売上⾦額を⼊れたMap.get(⽀店コード) + long に変換した売上⾦額; に倣って書く
 				//saleAmountっていうのは、売上金額を入れたmapです、支店コードがkeyでlongに変換した売上額がvalue
-				Long saleAmount = branchSales.get(loadedStr.get(0)) + fileSale ;
+				Long saleAmount = branchSales.get(loadedStr.get(0)) + fileSale;
 				//支店コードと売上額を追加するためのmap：branchSalesに、(支店コードを表す第一引数,売上額を表す第二引数)をぶちこむput
-				branchSales.put(loadedStr.get(0), saleAmount) ;
+				branchSales.put(loadedStr.get(0), saleAmount);
 
 			} catch (IOException e) {
-				System.out.println(UNKNOWN_ERROR) ;
-				return ;
+				System.out.println(UNKNOWN_ERROR);
+				return;
 			} finally {
 				// ファイルを開いている場合
 				if (br != null) {
 					try {
 						// ファイルを閉じる
-						br.close() ;
+						br.close();
 					} catch (IOException e) {
-						System.out.println(UNKNOWN_ERROR) ;
-						return ;
+						System.out.println(UNKNOWN_ERROR);
+						return;
 					}
 				}
 			}
@@ -160,7 +176,7 @@ public class CalculateSales {
 
 		// 支店別集計ファイル書き込み処理
 		if (!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
-			return ;
+			return;
 		}
 
 	}
@@ -176,44 +192,64 @@ public class CalculateSales {
 	 */
 	private static boolean readFile(String path, String fileName, Map<String, String> branchNames,
 			Map<String, Long> branchSales) {
-		BufferedReader br = null ;
+		BufferedReader br = null;
 
 		try {
-			File file = new File(path, fileName) ;
-			FileReader fr = new FileReader(file) ;
-			br = new BufferedReader(fr) ;
+			File file = new File(path, fileName);
+			//エラー処理①：支店定義ファイルが存在しない場合に、エラーメッセージを出力して処理を終了する
+			//File型のexistsメソッドを使って、もしファイルがなかったらと条件付ける
+			if (!file.exists()) {
+				//エラーメッセージの出力
+				System.out.println(FILE_NOT_EXIST);
+				//処理を終了する = falseだったためmainメソッドに戻る
+				return false;
+			}
+
+			FileReader fr = new FileReader(file);
+			br = new BufferedReader(fr);
 
 			//読み込んだものを格納する（一行分だけ）
-			String line ;
+			String line;
 			// 一行ずつ読み込む
 			while ((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 
 				//読み込んだ一行をsplitメソッドで分割したものをitemsに格納（2itemになっている。1個目が支店コード（items[0]、2個目が支店名(items[1]）
-				String[] items = line.split(",") ;
+				String[] items = line.split(",");
+
+				//↑の処理によって、lineが2つに分割されて、String型の配列に2つ要素（items）がある状況
+				//エラー処理②を行いたい絶好のポイント
+				//もし(要素数が2じゃないとき)または（支店コードが3桁の数字）なら
+				//items[0].matches("^\\d{3}$")　　数字3桁ならtrue、それ以外ならfalse
+				//→　その評価を反転させるために！をつける　→　つけたら、上の数字３桁ならfalse、それ以外ならtrue
+				if ((items.length != 2) || (!items[0].matches("^\\d{3}$"))) {
+					System.out.println(FILE_INVALID_FORMAT);
+					return false;
+
+				}
 
 				//Mapに追加する2つの情報を putの引数として指定します。
-				branchNames.put(items[0], items[1]) ;
-				branchSales.put(items[0], 0L) ;
+				branchNames.put(items[0], items[1]);
+				branchSales.put(items[0], 0L);
 
 			}
 
 		} catch (IOException e) {
-			System.out.println(UNKNOWN_ERROR) ;
-			return false ;
+			System.out.println(UNKNOWN_ERROR);
+			return false;
 		} finally {
 			// ファイルを開いている場合
 			if (br != null) {
 				try {
 					// ファイルを閉じる
-					br.close() ;
+					br.close();
 				} catch (IOException e) {
-					System.out.println(UNKNOWN_ERROR) ;
-					return false ;
+					System.out.println(UNKNOWN_ERROR);
+					return false;
 				}
 			}
 		}
-		return true ;
+		return true;
 	}
 
 	/**
@@ -228,13 +264,13 @@ public class CalculateSales {
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames,
 			Map<String, Long> branchSales) {
 		// 以下に書き込み処理を作成してください。(処理内容3-1)
-		BufferedWriter bw = null ;
+		BufferedWriter bw = null;
 
 		try {
 			//fileをつくる = fileは（users配下のtrainee1209の配下のDesktop配下の「売上集計課題フォルダ」で、branch.outっていう名前にしたい
-			File file = new File(path, fileName) ;
-			FileWriter fw = new FileWriter(file) ;
-			bw = new BufferedWriter(fw) ;
+			File file = new File(path, fileName);
+			FileWriter fw = new FileWriter(file);
+			bw = new BufferedWriter(fw);
 
 			//Keyが取得できればMapのgetメソッドを使⽤してValueも取得できるため、どちらかのMapから全てのKeyを取得する必要がある
 			//そのkeyの文だけ繰り返してね、を指示する
@@ -245,25 +281,25 @@ public class CalculateSales {
 			//まず繰り返すことを宣言する。繰り返します（branchNamesっていうmapの、string型のkeyを1個ずつ）
 
 			for (String key : branchNames.keySet()) {
-				bw.write(key + "," + branchNames.get(key) + "," + branchSales.get(key)) ;
-				bw.newLine() ;
+				bw.write(key + "," + branchNames.get(key) + "," + branchSales.get(key));
+				bw.newLine();
 			}
 
 		} catch (IOException e) {
-			System.out.println(UNKNOWN_ERROR) ;
-			return false ;
+			System.out.println(UNKNOWN_ERROR);
+			return false;
 
 		} finally {
 			if (bw != null) {
 				try {
-					bw.close() ;
+					bw.close();
 				} catch (IOException e) {
-					System.out.println(UNKNOWN_ERROR) ;
-					return false ;
+					System.out.println(UNKNOWN_ERROR);
+					return false;
 				}
 			}
 		}
-		return true ;
+		return true;
 	}
 
 }
