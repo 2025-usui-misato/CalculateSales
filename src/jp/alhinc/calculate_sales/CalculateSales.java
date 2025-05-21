@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,8 @@ public class CalculateSales {
 	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
 	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です";
 	private static final String TOTAL_PRICE_10DIGITS_EXCEEDED = "合計金額が10桁を超えました";
-	private static final String THEFILE_BRANCHCODE_ILLEGAL = "売上ファイルの支店コードが不正です";
-	private static final String THEFILE_FORMAT_ILLEGAL = "売上ファイルのフォーマットが不正です";
+	private static final String THEFILE_BRANCHCODE_ILLEGAL = "の支店コードが不正です";
+	private static final String THEFILE_FORMAT_ILLEGAL = "のフォーマットが不正です";
 
 	/**
 	 * メインメソッド
@@ -34,16 +35,17 @@ public class CalculateSales {
 	 */
 
 	public static void main(String[] args) {
-		// 支店コードと支店名を保持するMap
-		Map<String, String> branchNames = new HashMap<>();
-		// 支店コードと売上金額を保持するMap
-		Map<String, Long> branchSales = new HashMap<>();
-
 		if (args.length != 1) {
 			//コマンドライン引数が1つ設定されていなかった場合(1個以外全部NG、1じゃなきゃだめ）、
 			//エラーメッセージをコンソールに表⽰します。
 			System.out.println(UNKNOWN_ERROR);
+			return;
 		}
+
+		// 支店コードと支店名を保持するMap
+		Map<String, String> branchNames = new HashMap<>();
+		// 支店コードと売上金額を保持するMap
+		Map<String, Long> branchSales = new HashMap<>();
 
 		// 支店定義ファイル読み込み処理
 		//渡す側。呼び出し元
@@ -89,6 +91,11 @@ public class CalculateSales {
 			}
 
 		}
+
+		//OS問わず、正常に動作させるためには連番チェックを⾏う前に、売上ファイルを保持しているListをソートする必要がある
+		//windowsは昇順だが、macは違うらしい
+		Collections.sort(rcdFiles);
+
 		//エラー処理 2-2 売上⾦額の合計が10桁を超えたか確認する
 		//⽐較回数は売上ファイルの数よりも1回少ないため、
 		//繰り返し回数は売上ファイルのリストの数よりも1つ⼩さい数です。
@@ -146,6 +153,15 @@ public class CalculateSales {
 					loadedStr.add(line);
 				}
 
+				//エラー処理 2-4 売上ファイルのフォーマットを確認する
+				//売上ファイルの中身は2行になっていることが正しい
+				//2行以外になっている場合はエラーメッセージを表示して、すべて処理を終了させたい
+				//売上ファイルの中身が入っているlistの要素数を出して、2じゃないならエラーメッセージを表示して処理終了
+				if (loadedStr.size() != 2) {
+					System.out.println(file + THEFILE_FORMAT_ILLEGAL);
+					return;
+				}
+
 				//エラー処理 2-3 Mapに特定のKeyが存在するか確認する
 				//売上ファイルにkeyができたタイミングで見たい
 				//かつ、keyができてそれが「支店コード」であるとわかったあとに処理しないといけない
@@ -157,16 +173,7 @@ public class CalculateSales {
 				//という条件式になっている
 				if (!branchNames.containsKey(loadedStr.get(0))) {
 					//trueだったら「入ってない状態」であるため、エラーメッセージを表示する
-					System.out.println(THEFILE_BRANCHCODE_ILLEGAL);
-					return;
-				}
-
-				//エラー処理 2-4 売上ファイルのフォーマットを確認する
-				//売上ファイルの中身は2行になっていることが正しい
-				//2行以外になっている場合はエラーメッセージを表示して、すべて処理を終了させたい
-				//売上ファイルの中身が入っているlistの要素数を出して、2じゃないならエラーメッセージを表示して処理終了
-				if (loadedStr.size() != 2) {
-					System.out.println(THEFILE_FORMAT_ILLEGAL);
+					System.out.println(file + THEFILE_BRANCHCODE_ILLEGAL);
 					return;
 				}
 
@@ -183,7 +190,7 @@ public class CalculateSales {
 				//エラー処理 3-1 売上⾦額が数字なのか確認する
 				//箱を作る前に、中身がそもそも数字でないとlong型の箱はつくれない
 				//そのため、変換前に確認したい
-				if (!loadedStr.get(1).matches("^[0-9]*$")) {
+				if (!loadedStr.get(1).matches("^[0-9]+$")) {
 					//売上⾦額が数字ではなかった場合は、
 					//エラーメッセージをコンソールに表⽰します。
 					System.out.println(UNKNOWN_ERROR);
@@ -194,8 +201,6 @@ public class CalculateSales {
 				//売上金額は、読込時に(1)に入っている。支店コードが変わろうがこれは同じ。てことは支店コードは(0)に入っている
 				//売上額さんがご入居されている住所を、()にいれる。参照するということ
 				long fileSale = Long.parseLong(loadedStr.get(1));
-
-				//エラー処理 3-1 売上⾦額が数字なのか確認する
 
 				//Map(HashMap)から売上額を取得して、加算することを一気に行う
 				//Long saleAmount = 売上⾦額を⼊れたMap.get(⽀店コード) + long に変換した売上⾦額; に倣って書く
