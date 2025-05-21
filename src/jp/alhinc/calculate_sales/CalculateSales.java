@@ -14,28 +14,39 @@ import java.util.Map;
 public class CalculateSales {
 
 	// 支店定義ファイル名
-	private static final String FILE_NAME_BRANCH_LST = "branch.lst" ;
+	private static final String FILE_NAME_BRANCH_LST = "branch.lst";
 
 	// 支店別集計ファイル名
-	private static final String FILE_NAME_BRANCH_OUT = "branch.out" ;
+	private static final String FILE_NAME_BRANCH_OUT = "branch.out";
 
 	// エラーメッセージ
-	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました" ;
-	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません" ;
-	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です" ;
+	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
+	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
+	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です";
+	private static final String TOTAL_PRICE_10DIGITS_EXCEEDED = "合計金額が10桁を超えました";
+	private static final String THEFILE_BRANCHCODE_ILLEGAL = "売上ファイルの支店コードが不正です";
+	private static final String THEFILE_FORMAT_ILLEGAL = "売上ファイルのフォーマットが不正です";
 
 	/**
 	 * メインメソッド
 	 *
 	 * @param コマンドライン引数
 	 */
+
 	public static void main(String[] args) {
 		// 支店コードと支店名を保持するMap
 		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
 		Map<String, Long> branchSales = new HashMap<>();
 
+		if (args.length != 1) {
+			//コマンドライン引数が1つ設定されていなかった場合(1個以外全部NG、1じゃなきゃだめ）、
+			//エラーメッセージをコンソールに表⽰します。
+			System.out.println(UNKNOWN_ERROR);
+		}
+
 		// 支店定義ファイル読み込み処理
+		//渡す側。呼び出し元
 		//もし、（readFileが、args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales）だったら返す
 		if (!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
 			return;
@@ -60,7 +71,7 @@ public class CalculateSales {
 
 			//matches を使⽤してファイル名が「数字8桁.rcd」なのか判定します。
 			//「8桁の数字+.rcd」で条件付けをして判定したい。全部文字列だから、String型になる
-			if (fileName.matches("[0-9]{8}+.rcd$")) {
+			if (files[i].isFile() && fileName.matches("[0-9]{8}+.rcd$")) {
 				//trueの場合の処理を書きましょう
 				//trueの場合 = 「8桁の数字＋.rcd」と合致する場合
 				//ここまでは「判定しただけ」。ここから先で「判定したファイルを配列」する
@@ -78,7 +89,7 @@ public class CalculateSales {
 			}
 
 		}
-
+		//エラー処理 2-2 売上⾦額の合計が10桁を超えたか確認する
 		//⽐較回数は売上ファイルの数よりも1回少ないため、
 		//繰り返し回数は売上ファイルのリストの数よりも1つ⼩さい数です。
 		for (int i = 0; i < rcdFiles.size() - 1; i++) {
@@ -135,7 +146,31 @@ public class CalculateSales {
 					loadedStr.add(line);
 				}
 
-				//ここから2-2 型の変換
+				//エラー処理 2-3 Mapに特定のKeyが存在するか確認する
+				//売上ファイルにkeyができたタイミングで見たい
+				//かつ、keyができてそれが「支店コード」であるとわかったあとに処理しないといけない
+				//かつ、行がなくなるまで1行ずつ読み込んでねの処理の中にいれてしまうと、読み込んだ1つ1つに聞いてしまう
+				//だから、while文の外に書く。のでここ！
+				//構文に「！」があるため、！後の内容を反転させる。だから、
+				//「支店コード（このmapだとkeyにあたるもの）が入っているmapに、
+				//売上ファイルの中での支店コードに該当するものが入っていない（！ついてるから、入っているの逆）場合」
+				//という条件式になっている
+				if (!branchNames.containsKey(loadedStr.get(0))) {
+					//trueだったら「入ってない状態」であるため、エラーメッセージを表示する
+					System.out.println(THEFILE_BRANCHCODE_ILLEGAL);
+					return;
+				}
+
+				//エラー処理 2-4 売上ファイルのフォーマットを確認する
+				//売上ファイルの中身は2行になっていることが正しい
+				//2行以外になっている場合はエラーメッセージを表示して、すべて処理を終了させたい
+				//売上ファイルの中身が入っているlistの要素数を出して、2じゃないならエラーメッセージを表示して処理終了
+				if (loadedStr.size() != 2) {
+					System.out.println(THEFILE_FORMAT_ILLEGAL);
+					return;
+				}
+
+				//2-2 型の変換
 				//ここまでで、読み込むことだけできている
 				//このあとどんな流れ？ → 最終的に「加算できるようにしたい」ので、
 				//①まず、Stringとして扱われている売上額をLongに変換して格納しなおす、
@@ -145,15 +180,37 @@ public class CalculateSales {
 				//どうやって？ → keyとValueの関係性を使って、鍵を開けるイメージ？
 				//③そしてはじめて計算できるようになるため、加算する
 
+				//エラー処理 3-1 売上⾦額が数字なのか確認する
+				//箱を作る前に、中身がそもそも数字でないとlong型の箱はつくれない
+				//そのため、変換前に確認したい
+				if (!loadedStr.get(1).matches("^[0-9]*$")) {
+					//売上⾦額が数字ではなかった場合は、
+					//エラーメッセージをコンソールに表⽰します。
+					System.out.println(UNKNOWN_ERROR);
+					return;
+				}
+
 				//①をやっていく。売上額がStringになっているので、Longに変換する
 				//売上金額は、読込時に(1)に入っている。支店コードが変わろうがこれは同じ。てことは支店コードは(0)に入っている
 				//売上額さんがご入居されている住所を、()にいれる。参照するということ
 				long fileSale = Long.parseLong(loadedStr.get(1));
 
+				//エラー処理 3-1 売上⾦額が数字なのか確認する
+
 				//Map(HashMap)から売上額を取得して、加算することを一気に行う
 				//Long saleAmount = 売上⾦額を⼊れたMap.get(⽀店コード) + long に変換した売上⾦額; に倣って書く
 				//saleAmountっていうのは、売上金額を入れたmapです、支店コードがkeyでlongに変換した売上額がvalue
 				Long saleAmount = branchSales.get(loadedStr.get(0)) + fileSale;
+
+				//合計金額が出た時点で10桁以上だったらエラーメッセージを出したい
+				//合計金額が出た後、かつ、mapに追加する前、なのでここにエラー処理
+
+				if (saleAmount >= 10000000000L) {
+					System.out.println(TOTAL_PRICE_10DIGITS_EXCEEDED);
+					return;
+
+				}
+
 				//支店コードと売上額を追加するためのmap：branchSalesに、(支店コードを表す第一引数,売上額を表す第二引数)をぶちこむput
 				branchSales.put(loadedStr.get(0), saleAmount);
 
